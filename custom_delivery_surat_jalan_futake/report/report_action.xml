@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Report action: qweb-pdf A4 Landscape -->
+    <record id="action_report_surat_jalan" model="ir.actions.report">
+        <field name="name">Surat Jalan Pengiriman</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_delivery_surat_jalan_futake.report_surat_jalan</field>
+        <field name="report_file">custom_delivery_surat_jalan_futake.report_surat_jalan</field>
+        <field name="print_report_name">'Surat Jalan - %s' % (object.name.replace('/', '_'))</field>
+        <field name="paperformat_id" ref="paperformat_surat_jalan"/>
+    </record>
+
+</odoo>

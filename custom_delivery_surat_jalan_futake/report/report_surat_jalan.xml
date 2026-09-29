@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Wrapper -->
+    <template id="report_surat_jalan">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="custom_delivery_surat_jalan_futake.report_surat_jalan_document"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Document -->
+    <template id="report_surat_jalan_document">
+        <t t-set="company" t-value="o.company_id"/>
+        <t t-set="partner" t-value="o.partner_id"/>
+        <div class="page" style="font-size: 12px;">
+
+            <!-- ================= HEADER COMPANY ================= -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td width="18%" style="vertical-align: middle;">
+                        <img t-if="company.logo"
+                             t-att-src="image_data_uri(company.logo)"
+                             style="max-height: 75px; max-width: 160px;"/>
+                    </td>
+                    <td width="82%" style="vertical-align: middle;">
+                        <div style="font-size: 16px; font-weight: bold;"
+                             t-field="company.name"/>
+                        <div style="font-size: 11px; white-space: pre-line;">
+                            <t t-if="company.partner_id.street" t-esc="company.partner_id.street"/>
+                            <t t-if="company.partner_id.street2">
+                                <t t-esc="company.partner_id.street2"/>
+                            </t>
+                            <t t-if="company.partner_id.city or company.partner_id.state_id or company.partner_id.zip">
+                                <t t-esc="', '.join(filter(None, [
+                                    company.partner_id.city,
+                                    company.partner_id.state_id.name,
+                                    company.partner_id.zip]))"/>
+                            </t>
+                            <span t-if="company.partner_id.phone">Telp: <t t-esc="company.partner_id.phone"/></span>
+                            <span t-if="company.partner_id.website"> | <t t-esc="company.partner_id.website"/></span>
+                            <span t-if="company.partner_id.vat"> | NPWP: <t t-esc="company.partner_id.vat"/></span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <hr style="border: 1px solid black; margin: 6px 0 10px 0;"/>
+
+            <!-- ================= JUDUL + INFO ================= -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <!-- Judul besar di kiri -->
+                    <td width="38%" style="vertical-align: top;">
+                        <div style="font-size: 26px; font-weight: bold; line-height: 1.2;">
+                            SURAT JALAN<br/>PENGIRIMAN
+                        </div>
+                    </td>
+                    <!-- Informasi surat jalan di kanan -->
+                    <td width="62%" style="vertical-align: top;">
+                        <table width="100%" cellpadding="2" cellspacing="0" style="font-size: 12px;">
+                            <tr>
+                                <td width="22%"><strong>No. SJ</strong></td>
+                                <td width="3%">:</td>
+                                <td width="75%" t-esc="o.name"/>
+                            </tr>
+                            <tr>
+                                <td><strong>Kepada</strong></td>
+                                <td>:</td>
+                                <td t-esc="partner.name or ''"/>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top;"><strong>Alamat</strong></td>
+                                <td style="vertical-align: top;">:</td>
+                                <td style="vertical-align: top; white-space: pre-line;">
+                                    <t t-if="partner.street" t-esc="partner.street"/>
+                                    <t t-if="partner.street2" t-esc="partner.street2"/>
+                                    <t t-if="partner.city or partner.state_id or partner.zip"
+                                       t-esc="', '.join(filter(None, [partner.city, partner.state_id.name, partner.zip]))"/>
+                                    <t t-if="partner.country_id and partner.country_id.name != company.country_id.name"
+                                       t-esc="partner.country_id.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tgl Kirim</strong></td>
+                                <td>:</td>
+                                <td t-esc="o._get_delivery_date_str()"/>
+                            </tr>
+                            <tr>
+                                <td><strong>Nomor/Jenis Kendaraan</strong></td>
+                                <td>:</td>
+                                <td t-esc="' / '.join(filter(None, [o.vehicle_number or '', o.vehicle_type or '']))"/>
+                            </tr>
+                            <tr t-if="o.delivery_so_ref or o.origin">
+                                <td><strong>Referensi SO</strong></td>
+                                <td>:</td>
+                                <td t-esc="o.delivery_so_ref or o.origin"/>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- ================= TABEL BARANG ================= -->
+            <table width="100%" cellpadding="5" cellspacing="0"
+                   style="border-collapse: collapse; margin-top: 10px;">
+                <thead>
+                    <tr style="background-color: #d9d9d9;">
+                        <th style="border: 1px solid black; width: 5%; text-align: center;">No</th>
+                        <th style="border: 1px solid black; width: 35%; text-align: left;">Deskripsi Barang &amp; Spesifikasi</th>
+                        <th style="border: 1px solid black; width: 12%; text-align: center;">Qty</th>
+                        <th style="border: 1px solid black; width: 12%; text-align: center;">Satuan</th>
+                        <th style="border: 1px solid black; width: 15%; text-align: center;">Berat (Kg)</th>
+                        <th style="border: 1px solid black; width: 21%; text-align: center;">Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-set="lines"
+                       t-value="o.move_ids_without_package.filtered(lambda m: m.state != 'cancel')"/>
+                    <tr t-foreach="lines" t-as="move">
+                        <td style="border: 1px solid black; text-align: center; vertical-align: top;"
+                            t-esc="move_index + 1"/>
+                        <td style="border: 1px solid black; vertical-align: top;">
+                            <span t-field="move.product_id.display_name"/>
+                            <div t-if="move.description_picking and move.description_picking != move.product_id.display_name"
+                                 style="font-size: 11px; color: #444444;"
+                                 t-esc="move.description_picking"/>
+                        </td>
+                        <td style="border: 1px solid black; text-align: center; vertical-align: top;">
+                            <span t-esc="'%g' % move.quantity"/>
+                        </td>
+                        <td style="border: 1px solid black; text-align: center; vertical-align: top;"
+                            t-esc="move.product_uom.name if move.product_uom else ''"/>
+                        <td style="border: 1px solid black; text-align: center; vertical-align: top;"
+                            t-esc="'%g' % move.delivery_weight if move.delivery_weight else ''"/>
+                        <td style="border: 1px solid black; vertical-align: top;"
+                            t-esc="move.delivery_remark or ''"/>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- ================= CATATAN PENTING ================= -->
+            <div style="margin-top: 12px; border: 1px solid black; padding: 8px 12px;">
+                <div style="font-weight: bold; margin-bottom: 4px;">CATATAN PENTING:</div>
+                <div style="white-space: pre-line;"
+                     t-esc="company.delivery_note_default or
+                            '1. Barang diterima dalam kondisi baik dan sesuai PO.\n2. Surat jalan ini bukan bukti pembayaran yang sah (Faktur akan menyusul).\n3. Driver wajib menunggu proses bongkar dan verifikasi di lokasi selesai.'"/>
+                <div t-if="o.delivery_note" style="margin-top: 6px; white-space: pre-line;">
+                    <strong>Catatan: </strong><t t-esc="o.delivery_note"/>
+                </div>
+            </div>
+
+            <!-- ================= TANDA TANGAN ================= -->
+            <table width="100%" cellpadding="5" cellspacing="0"
+                   style="border-collapse: collapse; margin-top: 14px;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; width: 20%; text-align: center; padding: 5px;">Penerima</th>
+                        <th style="border: 1px solid black; width: 20%; text-align: center; padding: 5px;">Driver</th>
+                        <th style="border: 1px solid black; width: 20%; text-align: center; padding: 5px;">Security</th>
+                        <th style="border: 1px solid black; width: 20%; text-align: center; padding: 5px;">Kepala Produksi</th>
+                        <th style="border: 1px solid black; width: 20%; text-align: center; padding: 5px;">Marketing</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!-- Area tanda tangan manual -->
+                        <td style="border: 1px solid black; height: 110px; vertical-align: bottom; text-align: center; padding: 5px;"
+                            t-esc="o.receiver_name or ''"/>
+                        <td style="border: 1px solid black; height: 110px; vertical-align: bottom; text-align: center; padding: 5px;"
+                            t-esc="o.driver_name or ''"/>
+                        <td style="border: 1px solid black; height: 110px; vertical-align: bottom; text-align: center; padding: 5px;"
+                            t-esc="o.security_name or ''"/>
+                        <td style="border: 1px solid black; height: 110px; vertical-align: bottom; text-align: center; padding: 5px;"
+                            t-esc="o.production_head_name or ''"/>
+                        <td style="border: 1px solid black; height: 110px; vertical-align: bottom; text-align: center; padding: 5px;"
+                            t-esc="o.marketing_name or ''"/>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </template>
+
+</odoo>

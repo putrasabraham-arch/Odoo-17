@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Paper format A4 Landscape khusus Surat Jalan -->
+    <record id="paperformat_surat_jalan" model="report.paperformat">
+        <field name="name">Surat Jalan Pengiriman A4 Landscape</field>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_spacing">0</field>
+        <field name="disable_shrinking">True</field>
+    </record>
+
+</odoo>

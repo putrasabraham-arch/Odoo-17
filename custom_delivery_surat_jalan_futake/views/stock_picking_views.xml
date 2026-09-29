@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Extend form standar stock.picking (Odoo 17):
+        1. Tombol "Cetak Surat Jalan Pengiriman" di header
+           (hanya outgoing + state assigned/done)
+        2. Tab "Surat Jalan" (hanya outgoing)
+        3. Kolom "Berat (Kg)" dan "Keterangan" pada tabel Operations
+           (hanya outgoing)
+    -->
+    <record id="view_picking_form_inherit_surat_jalan" model="ir.ui.view">
+        <field name="name">stock.picking.form.surat.jalan</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Tombol cetak pada header form -->
+            <xpath expr="//header/field[@name='state'][1]" position="before">
+                <button name="%(custom_delivery_surat_jalan_futake.action_report_surat_jalan)d"
+                        string="Cetak Surat Jalan Pengiriman"
+                        type="action"
+                        groups="stock.group_stock_user"
+                        invisible="picking_type_code != 'outgoing' or state not in ('assigned', 'done')"
+                        data-hotkey="shift+j"/>
+            </xpath>
+
+            <!-- Tab Surat Jalan -->
+            <xpath expr="//page[@name='extra']" position="before">
+                <page string="Surat Jalan" name="surat_jalan"
+                      invisible="picking_type_code != 'outgoing'">
+                    <group>
+                        <group>
+                            <field name="vehicle_number" string="Nomor Polisi"/>
+                            <field name="vehicle_type" string="Jenis Kendaraan"/>
+                            <field name="driver_name" string="Driver"/>
+                            <field name="receiver_name" string="Penerima"/>
+                        </group>
+                        <group>
+                            <field name="security_name" string="Security"/>
+                            <field name="production_head_name" string="Kepala Produksi"/>
+                            <field name="marketing_name" string="Marketing"/>
+                        </group>
+                    </group>
+                    <field name="delivery_note" string="Catatan Surat Jalan"
+                           placeholder="Catatan tambahan untuk surat jalan..."/>
+                </page>
+            </xpath>
+
+            <!-- Kolom Berat & Keterangan pada tabel Operations -->
+            <xpath expr="//field[@name='move_ids_without_package']//tree//field[@name='picked']" position="after">
+                <field name="delivery_weight" string="Berat (Kg)"
+                       optional="show"
+                       column_invisible="parent.picking_type_code != 'outgoing'"/>
+                <field name="delivery_remark" string="Keterangan"
+                       optional="show"
+                       column_invisible="parent.picking_type_code != 'outgoing'"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
