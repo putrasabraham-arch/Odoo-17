@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Part of sale_downpayment_account. See LICENSE file for full copyright and licensing details. -->
+<!-- Author: https://github.com/putrasabraham-arch -->
+<odoo>
+
+    <record id="view_sale_advance_payment_inv_down_payment_account" model="ir.ui.view">
+        <field name="name">sale.advance.payment.inv.form.down.payment.account</field>
+        <field name="model">sale.advance.payment.inv</field>
+        <field name="inherit_id" ref="sale.view_sale_advance_payment_inv"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='deposit_account_id']" position="after">
+                <field name="down_payment_account_id"
+                    options="{'no_create': True}"
+                    invisible="advance_payment_method not in ('percentage', 'fixed')"
+                    required="advance_payment_method in ('percentage', 'fixed')"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
