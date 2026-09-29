@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sale_order_form_view_futago_stock_project" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.futago.stock.project</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button name="action_view_stock_project"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-briefcase"
+                        invisible="stock_project_count == 0">
+                    <field name="stock_project_count" widget="statinfo" string="Stock Project"/>
+                </button>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_button_box')]" position="before">
+                <field name="stock_project_count" invisible="1"/>
+                <field name="stock_project_id" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_line_tree_futago_stock_project" model="ir.ui.view">
+        <field name="name">sale.order.line.tree.inherit.futago.stock.project</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_uom_qty']" position="after">
+                <field name="stock_task_id" optional="hide"/>
+                <field name="stock_project_id" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

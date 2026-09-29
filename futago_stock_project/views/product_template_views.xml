@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_template_form_view_futago_stock_project" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.futago.stock.project</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="sale.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='service_tracking']" position="after">
+                <field name="stock_project_tracking" invisible="detailed_type != 'product'"/>
+                <div class="o_td_label d-inline-flex" invisible="stock_project_tracking != 'task' or detailed_type != 'product'">
+                    <label for="stock_project_id"/>
+                    <span class="fa fa-lg fa-building-o fa-fw" title="Values set here are company-specific." groups="base.group_multi_company"/>
+                </div>
+                <field name="stock_project_id"
+                       context="{'default_allow_billable': True}"
+                       invisible="stock_project_tracking != 'task' or detailed_type != 'product'"
+                       required="stock_project_tracking == 'task'"
+                       nolabel="1"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
