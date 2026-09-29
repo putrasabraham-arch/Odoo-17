@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Extend form standar stock.picking (Odoo 17):
+        1. Tombol "Cetak Bukti Penerimaan Barang" di header (hanya incoming + done)
+        2. Tab "Bukti Penerimaan" (hanya incoming)
+        3. Kolom "Keterangan" pada tabel Operations (hanya incoming)
+    -->
+    <record id="view_picking_form_inherit_bukti_penerimaan" model="ir.ui.view">
+        <field name="name">stock.picking.form.bukti.penerimaan</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Tombol cetak pada header form -->
+            <xpath expr="//header/field[@name='state'][1]" position="before">
+                <button name="%(custom_receipt_bukti_penerimaan_futake.action_report_bukti_penerimaan)d"
+                        string="Cetak Bukti Penerimaan Barang"
+                        type="action"
+                        groups="stock.group_stock_user"
+                        invisible="picking_type_code != 'incoming' or state != 'done'"
+                        data-hotkey="shift+p"/>
+            </xpath>
+
+            <!-- Tab Bukti Penerimaan -->
+            <xpath expr="//page[@name='extra']" position="before">
+                <page string="Bukti Penerimaan" name="bukti_penerimaan"
+                      invisible="picking_type_code != 'incoming'">
+                    <group>
+                        <group>
+                            <field name="receipt_reference" string="Referensi"/>
+                            <field name="receipt_vendor_ref" invisible="1"/>
+                            <field name="receipt_note" string="Catatan Penerimaan"/>
+                        </group>
+                        <group>
+                            <field name="delivered_by" string="Diserahkan Oleh"/>
+                            <field name="received_by" string="Diterima Oleh"/>
+                            <field name="approved_by" string="Mengetahui"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+            <!-- Kolom Keterangan pada tabel Operations -->
+            <xpath expr="//field[@name='move_ids_without_package']//tree//field[@name='picked']" position="after">
+                <field name="receipt_remark" string="Keterangan"
+                       optional="show"
+                       column_invisible="parent.picking_type_code != 'incoming'"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

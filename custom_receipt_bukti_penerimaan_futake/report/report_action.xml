@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Paper format A4 Portrait khusus -->
+    <record id="paperformat_bukti_penerimaan" model="report.paperformat">
+        <field name="name">Bukti Penerimaan Barang A4</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">12</field>
+        <field name="margin_right">12</field>
+        <field name="header_spacing">0</field>
+        <field name="disable_shrinking">True</field>
+    </record>
+
+    <!-- Report action: qweb-pdf A4 Portrait -->
+    <record id="action_report_bukti_penerimaan" model="ir.actions.report">
+        <field name="name">Bukti Penerimaan Barang</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_receipt_bukti_penerimaan_futake.report_bukti_penerimaan</field>
+        <field name="report_file">custom_receipt_bukti_penerimaan_futake.report_bukti_penerimaan</field>
+        <field name="print_report_name">'Bukti Penerimaan Barang - %s' % (object.name.replace('/', '_'))</field>
+        <field name="paperformat_id" ref="paperformat_bukti_penerimaan"/>
+    </record>
+
+</odoo>
