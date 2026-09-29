@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--Inheriting fields to res.users and ir.ui.menu-->
+    <record id="view_users_form" model="ir.ui.view">
+        <field name="name">res.users.view.form.inherit.hide.menu.user</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Hide Specific Menu" invisible="is_admin">
+                    <group>
+                        <div colspan="2">
+                            <b>All Companies:</b> menus below are hidden in
+                            every company.
+                        </div>
+                        <field name="hide_menu_ids" nolabel="1" colspan="2"
+                               widget="many2many_tags"
+                               placeholder="Hide in all companies..."/>
+                    </group>
+                    <separator string="Hidden Menu per Company"/>
+                    <field name="hide_menu_rule_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="company_id"/>
+                            <field name="menu_ids" widget="many2many_tags"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <field name="name" position="after">
+                <field name="is_admin" invisible="1"/>
+            </field>
+        </field>
+    </record>
+    <!--Inherited view of the model ir.ui.menu-->
+    <record id="edit_menu_access" model="ir.ui.view">
+        <field name="name">ir.ui.menu.view.form.inherit.hide.menu.user</field>
+        <field name="model">ir.ui.menu</field>
+        <field name="inherit_id" ref="base.edit_menu_access"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Restrict users" name="restrict_users">
+                    <group>
+                        <div colspan="2">
+                            Users listed here cannot see this menu in at
+                            least one company. Manage per-company
+                            restrictions from the user form
+                            (Hide Specific Menu tab).
+                        </div>
+                        <field name="restrict_user_ids" nolabel="1"
+                               colspan="2" readonly="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
